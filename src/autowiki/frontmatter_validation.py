@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
-from autowiki.frontmatter import read_markdown
+from autowiki.frontmatter import MarkdownDocument, read_markdown
 
 
 IGNORED_ROOT_MARKDOWN = {"AGENTS.md", "README.md"}
@@ -110,6 +110,10 @@ def validate_new_markdown_file(repo_root: Path, path: Path) -> list[ValidationIs
     if document.parse_error:
         return [ValidationIssue(path=path, message=f"{relative_path}: {document.parse_error}")]
 
+    shared_field_issues = validate_required_non_date_fields(relative_path, document)
+    if shared_field_issues:
+        return [ValidationIssue(path=path, message=message) for message in shared_field_issues]
+
     created_value = document.get("created")
     if created_value is None or not str(created_value).strip():
         return [
@@ -131,6 +135,10 @@ def validate_modified_markdown_file(repo_root: Path, path: Path) -> list[Validat
 
     if document.parse_error:
         return [ValidationIssue(path=path, message=f"{relative_path}: {document.parse_error}")]
+
+    shared_field_issues = validate_required_non_date_fields(relative_path, document)
+    if shared_field_issues:
+        return [ValidationIssue(path=path, message=message) for message in shared_field_issues]
 
     updated_value = document.get("updated")
     if updated_value is None or not str(updated_value).strip():
@@ -187,6 +195,40 @@ def parse_iso_date(value: object) -> date | None:
         return date.fromisoformat(stripped_value)
     except ValueError:
         return None
+
+
+def validate_required_non_date_fields(relative_path: Path, document: MarkdownDocument) -> list[str]:
+    issues: list[str] = []
+
+    title_value = document.get("title")
+    if not _is_non_empty_string(title_value):
+        issues.append(
+            f"{relative_path}: markdown files must include a non-empty `title` frontmatter field."
+        )
+
+    summary_value = document.get("summary")
+    if not _is_non_empty_string(summary_value):
+        issues.append(
+            f"{relative_path}: markdown files must include a non-empty `summary` frontmatter field."
+        )
+
+    keywords_value = document.get("keywords")
+    if not isinstance(keywords_value, list) or not keywords_value:
+        issues.append(
+            f"{relative_path}: markdown files must include a non-empty `keywords` frontmatter field as an array of strings."
+        )
+        return issues
+
+    if any(not _is_non_empty_string(keyword) for keyword in keywords_value):
+        issues.append(
+            f"{relative_path}: `keywords` must contain only non-empty strings."
+        )
+
+    return issues
+
+
+def _is_non_empty_string(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
 
 
 def main(argv: list[str] | None = None) -> int:
