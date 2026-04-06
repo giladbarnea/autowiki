@@ -6,3 +6,5 @@ repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
 uv run autowiki lint-frontmatter --staged
+uv run autowiki generate-index --repo-root "$repo_root"
+git add index.md
