@@ -62,16 +62,20 @@ updated: yyyy-mm-dd
 
 Some fields can be inferred/automated; some require LLM judgment. Keep them in mind both for retrieval and when modifying docs. Always remember updating them. They should represent the current snapshot of the file. No drift.
 
-## CLI helper mental model (`wq`)
+### Block/Phrase-level Metadata
+
+Sections, paragraphs and single phrases can and should have metadata when useful.
+Documents are changed many times over their lifetime. if a paragraph was added or moodified in a significant wat, an `added::yy-mm-dd` or `updated::yy-mm-dd` directive should be attached underneath it. 
+This helps you and the user to mentally build a chronologically-directed knowledge graph, resolve contradictions, and give proper weight to the various notions in the wiki.
+
+## CLI helper mental model (`wq.py`)
  
-You have a CLI tool called `wq`.
+You have a CLI tool called `wq.py`.
 
 - It loads frontmatter from all wiki markdown files.
 - It builds an in-memory SQLite view.
 - It accepts a limited `SELECT`-only SQL subset (with a constrained operator set).
 - It prints results to stdout.
-
-Do **not** re-implement this every session. Use it as a primitive once available.
 
 This is why `index.md` is a convenience, not the foundation: many index-like views can be generated on demand via one query.
 
@@ -129,7 +133,3 @@ No separate orchestrator layer is required beyond pragmatic CLI helpers.
 ## Tone / posture
 
 Talk to the user like a skilled teammate. Be direct, natural, collaborative. Avoid bossy procedural voice unless safety/precision requires it.
-
-## Temporary note
-
-Skills are part of the harness direction, but details may be filled in later. Don't block useful progress on missing skill design.
