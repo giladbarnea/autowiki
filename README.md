@@ -1,3 +1,11 @@
+---
+title: LLM Wiki
+summary: A pattern for building personal knowledge bases using LLMs, emphasizing persistent wiki maintenance over query-time retrieval.
+keywords: ["knowledge base", "wiki", "LLM", "RAG", "persistent synthesis", "incremental building"]
+created: 2026-04-01
+updated: 2026-04-06
+---
+
 # LLM Wiki
 
 A pattern for building personal knowledge bases using LLMs.

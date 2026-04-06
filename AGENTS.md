@@ -1,3 +1,11 @@
+---
+title: AGENTS.md
+summary: Agent operations and conventions for wiki maintenance, harness engineering, and local-first collaboration.
+keywords: ["agents", "operations", "wiki maintenance", "YAML frontmatter", "harness engineering", "conventions"]
+created: 2026-04-01
+updated: 2026-04-06
+---
+
 # AGENTS.md
 
 Before doing anything else, read `README.md` in full. It is the source of truth for the core pattern (Andrej Karpathy's gist) and the spirit of this project.
