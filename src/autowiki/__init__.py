@@ -1,2 +1,4 @@
-def main() -> None:
-    print("Hello from autowiki!")
+from autowiki.cli import main
+
+
+__all__ = ["main"]

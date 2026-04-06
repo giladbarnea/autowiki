@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh -i
+
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+uv run autowiki lint-frontmatter --staged

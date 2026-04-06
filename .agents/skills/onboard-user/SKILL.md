@@ -43,6 +43,7 @@ Useful framing:
 - "You do not need to understand how the wiki works behind the scenes to use it."
 - "You can point me at the mess in broad strokes and we can start there."
 - "We only need the smallest foothold, not a full migration plan."
+- "If you're just setting up locally, run `./setup.sh` once so the tracked git hooks are active."
 
 ## Conversation shape
 

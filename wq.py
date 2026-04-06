@@ -72,6 +72,13 @@ import textwrap
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parent
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from autowiki.frontmatter import collect_markdown_documents
+
 try:
     import yaml
 except ImportError:
@@ -86,40 +93,16 @@ except ImportError:
 
 # ─── Frontmatter + body loader ───────────────────────────────────────────────
 
-def load_frontmatter(path: Path) -> dict | None:
-    try:
-        text = path.read_text(encoding="utf-8", errors="replace")
-    except OSError:
-        return None
+def collect_records(root: Path) -> list[dict[str, object]]:
+    records: list[dict[str, object]] = []
+    for document in collect_markdown_documents(root):
+        if not document.has_frontmatter or document.parse_error:
+            continue
 
-    if not text.startswith("---"):
-        return None
-
-    end = text.find("\n---", 3)
-    if end == -1:
-        return None
-
-    try:
-        data = yaml.safe_load(text[3:end]) or {}
-    except yaml.YAMLError:
-        return None
-
-    # Body: everything after closing ---
-    body_start = end + 4  # len("\n---") == 4
-    if body_start < len(text) and text[body_start] == "\n":
-        body_start += 1
-    data["text"] = text[body_start:]
-
-    data["_path"] = str(path)
-    return data
-
-
-def collect_records(root: Path) -> list[dict]:
-    records = []
-    for md in sorted(root.rglob("*.md")):
-        fm = load_frontmatter(md)
-        if fm:
-            records.append(fm)
+        record = dict(document.frontmatter)
+        record["text"] = document.body
+        record["_path"] = str(document.path)
+        records.append(record)
     return records
 
 
