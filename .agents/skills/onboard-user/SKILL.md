@@ -44,6 +44,7 @@ Useful framing:
 - "You can point me at the mess in broad strokes and we can start there."
 - "We only need the smallest foothold, not a full migration plan."
 - "If you're just setting up locally, run `./setup.sh` once so the tracked git hooks are active."
+- "This project is operated with `uv`, so check whether `uv` is available and, if it isn't, ask whether the user wants to install it."
 
 ## Conversation shape
 
