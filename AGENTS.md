@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Hey teammate — before doing anything else, read `README.md` in full. It is the source of truth for the core pattern (Andrej Karpathy's gist) and the spirit of this project.
+Before doing anything else, read `README.md` in full. It is the source of truth for the core pattern (Andrej Karpathy's gist) and the spirit of this project.
 
 This repo is building that idea locally-first, with one important emphasis:
 
@@ -24,7 +24,7 @@ User sits down and says what they want to add in natural language. Could be:
 - a psychologist logging therapy session notes and reflections,
 - someone prepping for SWE interviews, logging reading progress, LeetCode practice, confusions, breakthroughs, anxiety notes, etc.
 
-After user input, Karpathy-style wiki maintenance should happen *automagically*: summarize, file, cross-link, update related pages, keep the knowledge base coherent.
+After user input, Karpathy-style wiki maintenance should happen *automatically*: summarize, file, cross-link, update related pages, keep the knowledge base coherent.
 
 ### 2) Q&A over the wiki
 
@@ -60,11 +60,11 @@ updated: yyyy-mm-dd
 ---
 ```
 
-Some fields can be inferred/automated; some require LLM judgment.
+Some fields can be inferred/automated; some require LLM judgment. Keep them in mind both for retrieval and when modifying docs. Always remember updating them. They should represent the current snapshot of the file. No drift.
 
 ## CLI helper mental model (`wq`)
-
-Assume there is (or will be) a CLI tool called `wq`.
+ 
+You have a CLI tool called `wq`.
 
 - It loads frontmatter from all wiki markdown files.
 - It builds an in-memory SQLite view.
