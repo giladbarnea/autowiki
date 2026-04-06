@@ -1,0 +1,17 @@
+[project]
+name = "autowiki"
+version = "0.1.0"
+description = "Personal knowledge management markdown files-based wiki with automatic bookkeeping"
+readme = "README.md"
+authors = [
+    { name = "Gilad Barnea", email = "gilad@hear.ai" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+autowiki = "autowiki:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
