@@ -168,6 +168,8 @@ def _existing_created_date(index_path: Path) -> str | None:
         return None
 
     created = existing_index.get("created")
+    if isinstance(created, date):
+        return created.isoformat()
     if not isinstance(created, str):
         return None
 

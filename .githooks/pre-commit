@@ -6,5 +6,11 @@ repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
 uv run autowiki lint-frontmatter --staged
-uv run autowiki generate-index --repo-root "$repo_root"
+
+temp_index_tree="$(mktemp -d)"
+trap 'rm -rf "$temp_index_tree"' EXIT
+
+git checkout-index --all --force --prefix="$temp_index_tree/"
+uv run autowiki generate-index --repo-root "$temp_index_tree"
+cp "$temp_index_tree/index.md" "$repo_root/index.md"
 git add index.md
