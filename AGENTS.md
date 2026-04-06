@@ -2,7 +2,7 @@
 title: AGENTS.md
 summary: Agent operations and conventions for wiki maintenance, harness engineering, and local-first collaboration.
 keywords: ["agents", "operations", "wiki maintenance", "YAML frontmatter", "harness engineering", "conventions"]
-created: 2026-04-01
+created: 2026-04-06
 updated: 2026-04-06
 ---
 
