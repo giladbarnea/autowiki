@@ -2,10 +2,12 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
 model = "gpt-5.4"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 tool_output_token_limit = 100000
 personality = "friendly"
 
+approval_policy = "never"
+sandbox_mode = "workspace-write"
 [notice]
 hide_full_access_warning = true
 hide_rate_limit_model_nudge = true
@@ -37,3 +39,6 @@ enabled = true
 [plugins."google-drive@openai-curated"]
 enabled = true
 
+
+[sandbox_workspace_write]
+network_access = true
