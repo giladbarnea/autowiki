@@ -1,0 +1,7 @@
+wq.py:
+1. so instead of `--dir`, lets do `--workspace=<name>`. has to be one of `wikis/` direct child dirs.
+2. you're right that it shouldn't query sources/.
+3. i lean on opt in `--workspace` if agent wants to limit search (which it would naturally). omitting this option would query the entire database. this makes more sense to me than having to introduce another awkward --search-all-workspaces later.
+
+src/autowiki/cli.py:
+1. so let's change `--repo-root` to `--workspace`, and consistent with wq.py, opt it. when omitted, it applies to all workspaces. generating an index.md is a naturally idempotent operation anyway. 
