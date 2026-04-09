@@ -1,0 +1,317 @@
+---
+session_id: rollout-2026-04-06T17-46-45-019d6342-a7d1-7c41-908c-1323e3681ce1
+directory: ~/dev/autowiki
+history_path: ~/.codex/sessions/2026/04/06/rollout-2026-04-06T17-46-45-019d6342-a7d1-7c41-908c-1323e3681ce1.jsonl
+created: "2026-04-06 17:50"
+modified: "2026-04-06 18:19"
+messages: 15
+---
+<user-message i="2">
+# User
+
+read [README.md](README.md) and [AGENTS.md](AGENTS.md) . 
+let's brainstorm a little. 
+the harness is more or less ready, but let's go through a simulating onboarding flow.
+let's imagine the user has a few separate projects they want to maintain wikis for. like people use Notion or Obsidian for different stuff. 
+Given autowiki's nature, main interaction style, etc, what would be the best architecture to support an arbitrary amount of wikis? 
+perhaps a root-level `wiki/` folder. this is the de facto root of the wiki itself. then what?
+
+let's literally do [$onboard-user](/Users/giladbarnea/dev/autowiki/.agents/skills/onboard-user/SKILL.md) . i have a real project i want to work with.
+</user-message>
+
+---
+
+<user-message i="3">
+# User
+
+<skill>
+<name>onboard-user</name>
+<path>/Users/giladbarnea/dev/autowiki/.agents/skills/onboard-user/SKILL.md</path>
+---
+title: Onboard User Skill
+summary: Warmly orient new or overwhelmed users to the local-first wiki and help them choose the smallest comfortable first step.
+keywords:
+  - skills
+  - onboarding
+  - user-orientation
+  - ingest
+created: 2026-04-06
+updated: 2026-04-06
+name: onboard-user
+description: Help new, overwhelmed, or uncertain users get comfortable with the wiki, explain the concept simply, and guide them toward the smallest next step for bringing scattered material into it. Use when the user is new, orienting, unsure what to import, anxious about setup, or only has a vague sense of where their material lives.
+---
+
+# Onboard User
+
+## Goal
+
+Help the user feel safe starting messy.
+
+This project is a local-first wiki that the agent maintains for the user through natural conversation. The user does not need to understand the engineering, schema, traversal machinery, or maintenance workflow in order to use it well. Their job is only to point in a direction, name a concern, or share a source. The agent does the organizing, traversing, summarizing, cross-linking, and upkeep.
+
+Assume `README.md` and `AGENTS.md` define the project contract and spirit. This skill exists to translate that model into a calming first conversation.
+
+## Tone
+
+- Be warm, calm, and patient.
+- Talk like a supportive teammate, not a manual.
+- Reduce anxiety explicitly.
+- Prefer natural dialogue over a procedural checklist.
+- Do not front-load architecture unless the user asks for it.
+
+## Core message to convey
+
+- It is okay if the wiki is empty.
+- It is okay if the user's information is scattered.
+- It is okay if the user does not yet know what they want.
+- A vague starting point is enough.
+- The agent can iterate with them and take care of the maintenance work.
+
+Useful framing:
+
+- "You do not need to understand how the wiki works behind the scenes to use it."
+- "You can point me at the mess in broad strokes and we can start there."
+- "We only need the smallest foothold, not a full migration plan."
+- "If you're just setting up locally, run `./setup.sh` once so the tracked git hooks are active."
+- "This project is operated with `uv`, so check whether `uv` is available and, if it isn't, ask whether the user wants to install it."
+
+## Conversation shape
+
+1. Explain the concept in plain language.
+2. Normalize overload, ambiguity, and scattered sources.
+3. Ask for the smallest next thing the user feels comfortable giving.
+4. Prefer one concrete foothold over a full inventory.
+
+Good footholds:
+
+- one folder path,
+- one source type,
+- one date range,
+- one recurring kind of note,
+- one rough cluster such as `"~/Documents therapy stuff"` or `"some Google Docs plus a Desktop folder"`.
+
+If the user mentions multiple messy sources, help them choose the easiest first slice instead of asking them to organize everything up front.
+
+## What not to do
+
+- Do not ask the user to design the wiki schema.
+- Do not require them to pre-sort, rename, or clean files first.
+- Do not overwhelm them with implementation details.
+- Do not ask for a perfect list of all sources before starting.
+- Do not make them feel they need a plan before the first step.
+
+## Handoff
+
+Once the user provides a foothold or source direction, load `ingest-information` and start doing the maintenance work.
+
+</skill>
+</user-message>
+
+---
+
+<assistant-response i="4">
+# Assistant
+
+I’m reading `README.md` and `AGENTS.md` first so I can ground this in the repo’s actual contract, then I’ll switch into the gentler onboarding flow and propose a multi-wiki shape that still fits the local-first agent model.
+</assistant-response>
+
+---
+
+<assistant-response i="5">
+# Assistant
+
+I’ve got the repo’s contract in view now. Next I’m shifting into the onboarding stance itself: keep the architecture minimal, avoid making the user pre-design the system, and find the smallest real foothold for your first project.
+</assistant-response>
+
+---
+
+<assistant-response i="6">
+# Assistant
+
+I’m sanity-checking the local setup affordances the onboarding skill mentions so I don’t suggest anything fictional. After that I’ll give you a concrete multi-wiki shape and then we can pick one real foothold from your actual project.
+</assistant-response>
+
+---
+
+<assistant-response i="7">
+# Assistant
+
+Using `$onboard-user` here, so I’m going to keep this grounded in the smallest useful next step rather than over-designing it.
+
+You do not need a grand schema before this becomes useful. For multiple projects, I think the cleanest architecture is: one shared harness, many self-contained wiki workspaces. In other words, not one giant global `wiki/` tree with everything mixed together, but a top-level container of separate wikis:
+
+```text
+autowiki/
+  scripts/
+  templates/
+  wikis/
+    project-a/
+      AGENTS.md
+      raw/
+      wiki/
+      index.md
+      log.md
+    project-b/
+      AGENTS.md
+      raw/
+      wiki/
+      index.md
+      log.md
+```
+
+The important idea is that each project gets its own boundary:
+- `raw/` is immutable source material for that project.
+- `wiki/` is the maintained markdown artifact for that project.
+- `index.md` and `log.md` are local to that project.
+- `AGENTS.md` can be mostly templated, with small project-specific rules.
+
+That keeps retrieval clean, keeps `wq.py` scoped to one wiki at a time, and avoids cross-project contamination. If later you want cross-wiki search, make that explicit through a lightweight registry like `wikis.toml` or `wikis/index.yaml`, rather than the default mode. Default should always be: “I am currently inside one wiki.”
+
+So to your “then what?”: inside each `wikis/<slug>/`, `wiki/` is the de facto wiki root. The harness lives above it; the content lives below it. That gives you arbitrary scale without losing the conversational simplicity.
+
+Also, small setup note: `./setup.sh` exists here, and `uv` is already available, so the local setup story is in good shape.
+
+Now let’s do the onboarding part for real. We only need one foothold, not a migration plan. Point me at one project and give me the easiest first slice: one folder path, one source type, or one rough cluster of material.
+</assistant-response>
+
+---
+
+<user-message i="8">
+# User
+
+this structure looks ok to me:
+```
+  wikis/
+    project-a/
+      AGENTS.md
+      raw/
+      wiki/
+      index.md
+      log.md
+    project-b/
+      AGENTS.md
+      raw/
+      wiki/
+      index.md
+      log.md
+```
+
+besides the `raw/` folder. if it's meant to contain source material like book pdfs or images, it can be called `sources/`. it's just that `raw/` sounds like it's the raw user input information before ingestion integrates it in the project.
+
+this design is a good start but it still leaves a few open ends:
+1. is `wq.py` now supposed to support filtering by wiki? `WHERE wiki = ...` ? this means `wiki` is another magic column, like `text` is. that's fine i guess
+2.
+</user-message>
+
+---
+
+<user-message i="9">
+# User
+
+<turn_aborted>
+The user interrupted the previous turn on purpose. Any running unified exec processes may still be running in the background. If any tools/commands were aborted, they may have partially executed; verify current state before retrying.
+</turn_aborted>
+</user-message>
+
+---
+
+<user-message i="10">
+# User
+
+this structure looks ok to me:
+```
+  wikis/
+    project-a/
+      AGENTS.md
+      raw/
+      wiki/
+      index.md
+      log.md
+    project-b/
+      AGENTS.md
+      raw/
+      wiki/
+      index.md
+      log.md
+```
+
+besides the `raw/` folder. if it's meant to contain source material like book pdfs or images, it can be called `sources/`. it's just that `raw/` sounds like it's the raw user input information before ingestion integrates it in the project.
+
+this design is a good start but it still leaves a few open ends:
+1. is `wq.py` now supposed to support filtering by wiki? `WHERE wiki = ...` ? this means `wiki` is another magic column, like `text` is. that's fine i guess?
+
+2. take a look at .githooks/pre-commit, then study the invoked logic at `src/autowiki/*`. in our multi-wiki design, what, behaviorally, do you think would need to change?
+</user-message>
+
+---
+
+<assistant-response i="11">
+# Assistant
+
+I’m going into the actual hook and `src/autowiki` logic now, so we can answer this behaviorally rather than hand-waving. I’ll map the current single-wiki assumptions first, then translate them into the smallest set of multi-wiki changes.
+</assistant-response>
+
+---
+
+<assistant-response i="12">
+# Assistant
+
+I found the key moving parts. Next I’m reading the CLI, frontmatter, and index builder end to end so I can point to the exact single-wiki assumptions that would break or need widening.
+</assistant-response>
+
+---
+
+<assistant-response i="13">
+# Assistant
+
+I’ve confirmed the current code is very much “one repo = one wiki.” I’m checking `wq.py` too so I can answer whether `wiki` should become a first-class query column or whether scoping should happen one level earlier.
+</assistant-response>
+
+---
+
+<assistant-response i="14">
+# Assistant
+
+I have the current shape now. The main theme is: today the tooling treats the entire repo as one content universe, so the multi-wiki change is mostly about introducing an explicit “active wiki root” everywhere that currently says “repo root.”
+</assistant-response>
+
+---
+
+<assistant-response i="15">
+# Assistant
+
+I’ve got the behavioral shape. I’m pulling line numbers now so I can anchor the recommendations to the current implementation instead of speaking abstractly.
+</assistant-response>
+
+---
+
+<assistant-response i="16">
+# Assistant
+
+`sources/` is the better name. It makes the layer boundary clearer. If you later want a place for truly messy pre-ingest drops, I’d use something like `inbox/` or `captures/` for that, and keep `sources/` as “immutable source corpus.”
+
+**`wq.py`**
+- I would not make `WHERE wiki = ...` the default mental model.
+- Each `wikis/<slug>/` should behave like its own database. In practice that means `wq.py` should usually be scoped to one workspace root via `--dir`, not to the whole repo. The current `--dir` flag already points in that direction at [wq.py](/Users/giladbarnea/dev/autowiki/wq.py#L318).
+- If you later want cross-workspace querying, add a normal derived column like `workspace` or `workspace_slug`, not `wiki`. `wiki` is overloaded now that `wiki/` is also the maintained subtree.
+- I’d also add a normal `collection` column in that advanced mode: `wiki`, `sources`, `meta`.
+- `text` should remain the only truly “magic” column, because it changes rendering behavior. A workspace column would just be ordinary metadata.
+
+There’s also an important behavioral point here: once you rename `raw/` to `sources/`, `wq.py` probably should not query `sources/` by default. Q&A is supposed to happen over the maintained wiki, not over the raw source pile. Right now `wq.py` blindly loads every frontmatter document under the scanned root at [wq.py](/Users/giladbarnea/dev/autowiki/wq.py#L96), so it would need a workspace-aware inclusion policy.
+
+**Hook + `src/autowiki`**
+- The biggest shift is that the system needs a first-class notion of “workspace root.” Right now everything is written as if “repo root = one wiki.”
+- The pre-commit hook currently regenerates one repo-level `index.md` for the whole repo at [.githooks/pre-commit](/Users/giladbarnea/dev/autowiki/.githooks/pre-commit#L13). In a multi-wiki setup, that should become “find affected workspaces, then regenerate each `wikis/<slug>/index.md`.” The current copy-back to root `index.md` at [.githooks/pre-commit](/Users/giladbarnea/dev/autowiki/.githooks/pre-commit#L15) no longer matches the model.
+- The CLI also encodes the old assumption by naming the target `--repo-root` in [cli.py](/Users/giladbarnea/dev/autowiki/src/autowiki/cli.py#L29). Behaviorally, this wants to become `--workspace-root`, plus maybe a separate “generate all workspace indexes” command later.
+- Validation is currently too broad. `should_validate_markdown_path()` in [frontmatter_validation.py](/Users/giladbarnea/dev/autowiki/src/autowiki/frontmatter_validation.py#L80) will try to validate any staged `.md` that isn’t hidden or a root README/AGENTS. In a multi-wiki design, that would wrongly enforce strict wiki frontmatter on `sources/**/*.md` if those sources happen to be markdown.
+- Indexing is currently coupled to validation. `_collect_records()` in [index_builder.py](/Users/giladbarnea/dev/autowiki/src/autowiki/index_builder.py#L113) reuses `should_validate_markdown_path()`, which means “what we lint” and “what we catalog” are treated as the same set. In the multi-wiki world, those should diverge.
+
+The split I’d use is:
+- Strict validation: `wiki/**/*.md`, `log.md`, `index.md`, maybe local `AGENTS.md`.
+- No or relaxed validation: `sources/**`.
+- Index/catalog input: the maintained wiki corpus, not raw `sources/**`.
+
+So behaviorally, the new abstraction I’d introduce is not a `wiki` SQL column first. It’s a shared workspace/layout layer used by the hook, validator, index builder, and query tool. Something like: discover workspace from path, classify path as `wiki`/`sources`/`meta`, and then let every tool reuse that.
+
+If you want, next I can turn this into a concrete proposed API and hook flow without editing code yet.
+</assistant-response>
